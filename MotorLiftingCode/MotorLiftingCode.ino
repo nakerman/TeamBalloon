@@ -45,7 +45,7 @@ void loop(){
   
 
   //int target = timeDiff / 100;
-  int target = 500;
+  int target = 0;
   int delta = target - result;
 
   int maxPower = 255;
