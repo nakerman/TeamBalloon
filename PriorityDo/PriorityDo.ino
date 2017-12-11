@@ -14,6 +14,10 @@ int previousPosition = bottomPosition + 100; // The position of the bellows in t
 
 long milliStartTime;
 
+// Lights
+int redPin = 5;  // green wire after resistor
+int grnPin = 6; // blue   "
+
 void setup() {
 
   // Setup Channel A
@@ -24,12 +28,26 @@ void setup() {
   Serial.begin(115200);
 
   milliStartTime = millis();
+
+  pinMode(redPin, OUTPUT);
+  pinMode(grnPin, OUTPUT);
 }
 
 
 void loop(){
   long timeDifferenceMillis =  millis() - milliStartTime;
   int currentPosition = analogRead(A5);
+
+
+  // Lights
+  float i = (currentPosition - topPosition + 0.0f)/(bottomPosition - topPosition + 0.0f);
+  i = constrain(i, 0, 1);
+  i = 1 - i;
+  Serial.println(i);
+  
+ 
+  analogWrite(redPin, 255*i);
+  analogWrite(grnPin, 50*(1.0f-i));      
 
   int targetPosition;
   float distanceOffsetPerMilli; // Distance to travel per ms
@@ -61,6 +79,7 @@ void loop(){
       numberOfBlocks = timeDifferenceMillis / millisPerTimeBlock;
 
       if (numberOfBlocks > pastTimeBlocks) { // A new block has been completed
+        //Serial.println("Block");
         if (currentTimeBlockDistance > 20) { // As inverted
           Serial.println("Someone has pushed the sensor");
 
@@ -94,7 +113,16 @@ void loop(){
 
       moveToTarget(currentPosition, targetPosition, 255);
 
+      /*
+      Serial.println("Moving from:");
+      Serial.println(currentPosition);
 
+      Serial.println("Moving to:");
+      Serial.println(targetPosition);
+
+      Serial.println();
+
+  */
       /*
       Serial.println("Sensor Reading");
       Serial.println(currentPosition);
@@ -133,3 +161,5 @@ void moveToTarget(int currentPosition, int targetPosition, int power){
 
   }
 }
+
+
