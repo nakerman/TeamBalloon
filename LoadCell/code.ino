@@ -13,40 +13,23 @@ void setup() {
 
 float forceHistory[4] = {0,0,0,0};
 int forceHistoryIndex = 0;
+
 void loop() {
-  if (Serial.available() > 0) {
+  if (scale.is_ready()){
     forceHistory[forceHistoryIndex] = scale.get_units();
     forceHistoryIndex = (forceHistoryIndex + 1) % 4;
-    
-    float force = (forceHistory[0] + forceHistory[1] + forceHistory[2] + forceHistory[3])/4.0f;
-    
-    // read the incoming byte:
-    char commandChar = Serial.read();
-    
-    // only do 1 char commands for now
-    switch(commandChar){
-      case 't': // tare
-      scale.tare();
-      break;
-      
-      case 'm': // measure
-      {
-        Serial.print(force, 10);
-        Serial.print(", ");
-        
-        float coinWeight = 0.00576f;
-        float coins = (force/coinWeight);
-        Serial.print(coins, 2);
-        Serial.print(" coins, ");
-        int seconds = coins*30;
-        Serial.print(seconds);
-        Serial.println(" seconds");
-        break;
-      }
-      
-      case '\n':
-      default:
-      break;
-    }
   }
+  
+  float force = (forceHistory[0] + forceHistory[1] + forceHistory[2] + forceHistory[3])/4.0f;
+
+  Serial.print(force, 10);
+  Serial.print(", ");
+  
+  float coinWeight = 0.00576f;
+  float coins = (force/coinWeight);
+  Serial.print(coins, 2);
+  Serial.print(" coins, ");
+  int seconds = coins*30;
+  Serial.print(seconds);
+  Serial.println(" seconds");
 }
