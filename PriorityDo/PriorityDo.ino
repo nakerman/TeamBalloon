@@ -40,6 +40,7 @@ void loop(){
   int timeThatShouldBeLeft;
   int trueTimeLeft;
   int positionOffset;
+  float msTimeAdded;
 
   switch(state) {
     case 0: // Return to base position
@@ -60,20 +61,19 @@ void loop(){
       numberOfBlocks = timeDifferenceMillis / millisPerTimeBlock;
 
       if (numberOfBlocks > pastTimeBlocks) { // A new block has been completed
-        if (currentTimeBlockDistance  > 20) { // As inverted
+        if (currentTimeBlockDistance > 20) { // As inverted
           Serial.println("Someone has pushed the sensor");
 
           // Where we are
           distanceOffsetPerMilli = ((bottomPosition - topPosition) + 0.0) / (secondsToRise * 1000);
           trueTimeLeft = (bottomPosition - currentPosition) / distanceOffsetPerMilli;
 
-          // Minus the number of seconds from start time off the diff
-          Serial.println("Start time before");
-          Serial.println(milliStartTime);
-          milliStartTime += (abs(timeDifferenceMillis -  trueTimeLeft));
-          Serial.println("Start time after");
-          Serial.println(milliStartTime);
-          Serial.println("");
+          msTimeAdded = (abs(timeDifferenceMillis -  trueTimeLeft));
+          milliStartTime += msTimeAdded;
+
+
+          // Update block numbers, as we're effectivly repeating blocks
+          pastTimeBlocks -= (msTimeAdded / millisPerTimeBlock);
         }
         pastTimeBlocks += 1;
         currentTimeBlockDistance = 0;
